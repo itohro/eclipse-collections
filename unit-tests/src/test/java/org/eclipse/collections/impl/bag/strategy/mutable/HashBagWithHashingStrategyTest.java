@@ -28,32 +28,6 @@ import org.junit.Test;
  */
 public class HashBagWithHashingStrategyTest extends MutableBagTestCase
 {
-    private static final HashingStrategy<String> STRING_HASHING_STRATEGY = HashingStrategies.nullSafeHashingStrategy(new HashingStrategy<String>()
-    {
-        public int computeHashCode(String object)
-        {
-            return object.hashCode();
-        }
-
-        public boolean equals(String object1, String object2)
-        {
-            return object1.equals(object2);
-        }
-    });
-
-    private static final HashingStrategy<Integer> INTEGER_HASHING_STRATEGY = HashingStrategies.nullSafeHashingStrategy(new HashingStrategy<Integer>()
-    {
-        public int computeHashCode(Integer object)
-        {
-            return object.hashCode();
-        }
-
-        public boolean equals(Integer object1, Integer object2)
-        {
-            return object1.equals(object2);
-        }
-    });
-
     private static final HashingStrategy<Person> FIRST_NAME_HASHING_STRATEGY = HashingStrategies.fromFunction(Person.TO_FIRST);
     private static final HashingStrategy<Person> LAST_NAME_HASHING_STRATEGY = HashingStrategies.fromFunction(Person.TO_LAST);
 
@@ -87,7 +61,7 @@ public class HashBagWithHashingStrategyTest extends MutableBagTestCase
         Verify.assertThrows(IllegalArgumentException.class, () -> HashBagWithHashingStrategy.newBag(null, 1));
         Verify.assertThrows(IllegalArgumentException.class, () -> HashBagWithHashingStrategy.newBag(null, Bags.mutable.empty()));
         Verify.assertThrows(IllegalArgumentException.class, () -> HashBagWithHashingStrategy.newBag(null, Lists.mutable.empty()));
-        Verify.assertThrows(IllegalArgumentException.class, () -> HashBagWithHashingStrategy.newBag(INTEGER_HASHING_STRATEGY, -1));
+        Verify.assertThrows(IllegalArgumentException.class, () -> HashBagWithHashingStrategy.newBag(HashingStrategies.defaultStrategy(), -1));
     }
 
     @Override
@@ -128,8 +102,8 @@ public class HashBagWithHashingStrategyTest extends MutableBagTestCase
     @Test
     public void hashingStrategy()
     {
-        HashBagWithHashingStrategy<Integer> map = HashBagWithHashingStrategy.newBagWith(INTEGER_HASHING_STRATEGY, 1, 1, 2, 2);
-        Assert.assertSame(INTEGER_HASHING_STRATEGY, map.hashingStrategy());
+        HashBagWithHashingStrategy<Integer> map = HashBagWithHashingStrategy.newBagWith(HashingStrategies.defaultStrategy(), 1, 1, 2, 2);
+        Assert.assertSame(HashingStrategies.defaultStrategy(), map.hashingStrategy());
     }
 
     @Test
@@ -174,7 +148,7 @@ public class HashBagWithHashingStrategyTest extends MutableBagTestCase
     @Test
     public void addOccurrences_occurrencesOf_with_hashing_strategy()
     {
-        HashBagWithHashingStrategy<String> bag = HashBagWithHashingStrategy.newBagWith(STRING_HASHING_STRATEGY, "1", "2", "2");
+        HashBagWithHashingStrategy<String> bag = HashBagWithHashingStrategy.newBagWith(HashingStrategies.defaultStrategy(), "1", "2", "2");
         bag.addOccurrences(null, 5);
 
         //Testing getting values from no chains
@@ -201,8 +175,8 @@ public class HashBagWithHashingStrategyTest extends MutableBagTestCase
 
         Verify.assertEmpty(bag);
 
-        HashBagWithHashingStrategy<Integer> bag2 = HashBagWithHashingStrategy.newBagWith(INTEGER_HASHING_STRATEGY, 1, null, null, 3, 3, 3);
+        HashBagWithHashingStrategy<Integer> bag2 = HashBagWithHashingStrategy.newBagWith(HashingStrategies.defaultStrategy(), 1, null, null, 3, 3, 3);
         bag2.removeOccurrences(null, 2);
-        Assert.assertEquals(HashBagWithHashingStrategy.newBagWith(INTEGER_HASHING_STRATEGY, 1, 3, 3, 3), bag2);
+        Assert.assertEquals(HashBagWithHashingStrategy.newBagWith(HashingStrategies.defaultStrategy(), 1, 3, 3, 3), bag2);
     }
 }
